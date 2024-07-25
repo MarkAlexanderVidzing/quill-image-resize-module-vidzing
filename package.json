@@ -1,7 +1,7 @@
 {
-  "name": "quill-image-resize-module-react",
-  "version": "3.0.0",
-  "description": "A module for Quill rich text editor to allow images to be resized (with react fixes).",
+  "name": "quill-image-resize-module-vidzing",
+  "version": "1.0.0",
+  "description": "A module for Quill rich text editor to allow images to be resized (with react + mobile fixes).",
   "main": "image-resize.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 0",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/concrete-cc/quill-image-resize-module-react.git"
+    "url": "git+https://github.com/MarkAlexanderVidzing/quill-image-resize-module-vidzing.git"
   },
   "keywords": [
     "quill",
@@ -23,10 +23,7 @@
   ],
   "author": "@kensnyder",
   "contributors": [
-    {
-      "name": "Wikia",
-      "url": "https://github.com/Wikia"
-    }
+    "Wikia (https://github.com/Wikia)"
   ],
   "license": "MIT",
   "bugs": {
