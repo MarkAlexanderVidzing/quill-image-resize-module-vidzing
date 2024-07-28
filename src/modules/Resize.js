@@ -47,7 +47,7 @@ export class Resize extends BaseModule {
         box.style.height = `${this.options.handleStyles.height}px`;
 
         // listen for mousedown on each box
-		box.addEventListener('touchstart', this.handleMousedown, false);
+		box.addEventListener('touchstart', this.handleMousedown, { passive: true });
 		box.addEventListener('mousedown', this.handleMousedown, false);
         // add drag handle to document
         this.overlay.appendChild(box);
@@ -69,8 +69,8 @@ export class Resize extends BaseModule {
         // set the proper cursor everywhere
         this.setCursor(this.dragBox.style.cursor);
         // listen for movement and mouseup
-		document.addEventListener('touchmove', this.handleDrag, false);
-		document.addEventListener('touchend', this.handleMouseup, false);
+		document.addEventListener('touchmove', this.handleDrag, { passive: true });
+		document.addEventListener('touchend', this.handleMouseup, { passive: true });
 		document.addEventListener('mousemove', this.handleDrag, false);
 		document.addEventListener('mouseup', this.handleMouseup, false);
     };
