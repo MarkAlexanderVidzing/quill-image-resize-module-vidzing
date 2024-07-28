@@ -1,6 +1,6 @@
 {
   "name": "quill-image-resize-module-vidzing",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A module for Quill rich text editor to allow images to be resized (with react + mobile fixes).",
   "main": "image-resize.min.js",
   "scripts": {
