@@ -1,119 +1,126 @@
 import { BaseModule } from './BaseModule';
 
 export class Resize extends BaseModule {
-    onCreate = () => {
-        // track resize handles
-        this.boxes = [];
+	onCreate = () => {
+		// Track resize handles
+		this.boxes = [];
 
-        // add 4 resize handles
-        this.addBox('nwse-resize'); // top left
-        this.addBox('nesw-resize'); // top right
-        this.addBox('nwse-resize'); // bottom right
-        this.addBox('nesw-resize'); // bottom left
+		// Add 4 resize handles
+		this.addBox('nwse-resize'); // Top left
+		this.addBox('nesw-resize'); // Top right
+		this.addBox('nwse-resize'); // Bottom right
+		this.addBox('nesw-resize'); // Bottom left
 
-        this.positionBoxes();
-    };
+		this.positionBoxes();
+	};
 
-    onDestroy = () => {
-        // reset drag handle cursors
-        this.setCursor('');
-    };
+	onDestroy = () => {
+		// Reset drag handle cursors
+		this.setCursor('');
+	};
 
-    positionBoxes = () => {
-        const handleXOffset = `${-parseFloat(this.options.handleStyles.width) / 2}px`;
-        const handleYOffset = `${-parseFloat(this.options.handleStyles.height) / 2}px`;
+	positionBoxes = () => {
+		const handleXOffset = `${-parseFloat(this.options.handleStyles.width) / 2}px`;
+		const handleYOffset = `${-parseFloat(this.options.handleStyles.height) / 2}px`;
 
-        // set the top and left for each drag handle
-        [
-            { left: handleXOffset, top: handleYOffset },        // top left
-            { right: handleXOffset, top: handleYOffset },       // top right
-            { right: handleXOffset, bottom: handleYOffset },    // bottom right
-            { left: handleXOffset, bottom: handleYOffset },     // bottom left
-        ].forEach((pos, idx) => {
-            Object.assign(this.boxes[idx].style, pos);
-        });
-    };
+		// Set the top and left for each drag handle
+		[
+			{ left: handleXOffset, top: handleYOffset },        // Top left
+			{ right: handleXOffset, top: handleYOffset },       // Top right
+			{ right: handleXOffset, bottom: handleYOffset },    // Bottom right
+			{ left: handleXOffset, bottom: handleYOffset },     // Bottom left
+		].forEach((pos, idx) => {
+			Object.assign(this.boxes[idx].style, pos);
+		});
+	};
 
-    addBox = (cursor) => {
-        // create div element for resize handle
-        const box = document.createElement('div');
+	addBox = (cursor) => {
+		// Create div element for resize handle
+		const box = document.createElement('div');
 
-        // Star with the specified styles
-        Object.assign(box.style, this.options.handleStyles);
-        box.style.cursor = cursor;
+		// Start with the specified styles
+		Object.assign(box.style, this.options.handleStyles);
+		box.style.cursor = cursor;
 
-        // Set the width/height to use 'px'
-        box.style.width = `${this.options.handleStyles.width}px`;
-        box.style.height = `${this.options.handleStyles.height}px`;
+		// Set the width/height to use 'px'
+		box.style.width = `${this.options.handleStyles.width}px`;
+		box.style.height = `${this.options.handleStyles.height}px`;
 
-        // listen for mousedown on each box
+		// Listen for mousedown on each box
 		box.addEventListener('touchstart', this.handleMousedown, { passive: true });
 		box.addEventListener('mousedown', this.handleMousedown, false);
-        // add drag handle to document
-        this.overlay.appendChild(box);
-        // keep track of drag handle
-        this.boxes.push(box);
-    };
 
-    handleMousedown = (evt) => {
-        // note which box
-        this.dragBox = evt.target;
-        // note starting mousedown position
-		if(evt.touches) {
-			this.dragStartX = evt.touches[0].clientX;
-		} else {
-			this.dragStartX = evt.clientX;
-		}
-        // store the width before the drag
-        this.preDragWidth = this.img.width || this.img.naturalWidth;
-        // set the proper cursor everywhere
-        this.setCursor(this.dragBox.style.cursor);
-        // listen for movement and mouseup
+		// Add drag handle to document
+		this.overlay.appendChild(box);
+
+		// Keep track of drag handle
+		this.boxes.push(box);
+	};
+
+	handleMousedown = (evt) => {
+		// Note which box
+		this.dragBox = evt.target;
+
+		// Note starting mousedown position
+		this.dragStartX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+
+		// Store the width before the drag
+		this.preDragWidth = this.img.width || this.img.naturalWidth;
+
+		// Set the proper cursor everywhere
+		this.setCursor(this.dragBox.style.cursor);
+
+		// Listen for movement and mouseup
 		document.addEventListener('touchmove', this.handleDrag, { passive: true });
 		document.addEventListener('touchend', this.handleMouseup, { passive: true });
 		document.addEventListener('mousemove', this.handleDrag, false);
 		document.addEventListener('mouseup', this.handleMouseup, false);
-    };
+	};
 
-    handleMouseup = () => {
-        // reset cursor everywhere
-        this.setCursor('');
-        // stop listening for movement and mouseup
+	handleMouseup = () => {
+		// Reset cursor everywhere
+		this.setCursor('');
+
+		// Stop listening for movement and mouseup
 		document.removeEventListener('touchmove', this.handleDrag);
 		document.removeEventListener('touchend', this.handleMouseup);
 		document.removeEventListener('mousemove', this.handleDrag);
 		document.removeEventListener('mouseup', this.handleMouseup);
-    };
+	};
 
-    handleDrag = (evt) => {
-        if (!this.img) {
-            // image not set yet
-            return;
-        }
-        // update image size
-		var clientX;
-		if(evt.touches){
-			clientX = evt.touches[0].clientX;
-		} else {
-			clientX = evt.clientX;
+	handleDrag = (evt) => {
+		if (!this.img) {
+			// Image not set yet
+			return;
 		}
-		const deltaX = clientX - this.dragStartX;
-        if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
-            // left-side resize handler; dragging right shrinks image
-            this.img.width = Math.round(this.preDragWidth - deltaX);
-        } else {
-            // right-side resize handler; dragging right enlarges image
-            this.img.width = Math.round(this.preDragWidth + deltaX);
-        }
-        this.requestUpdate();
-    };
 
-    setCursor = (value) => {
-        [
-            document.body,
-            this.img,
-        ].forEach((el) => {
-            el.style.cursor = value;   // eslint-disable-line no-param-reassign
-        });
-    };
+		// Update image size
+		const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+		const deltaX = clientX - this.dragStartX;
+		let newWidth;
+
+		if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
+			// Left-side resize handler; dragging right shrinks image
+			newWidth = Math.round(this.preDragWidth - deltaX);
+		} else {
+			// Right-side resize handler; dragging right enlarges image
+			newWidth = Math.round(this.preDragWidth + deltaX);
+		}
+
+		// Constrain newWidth to prevent the image from being too small or too large
+		const minWidth = 20; // Set a minimum width
+		const maxWidth = this.overlay.offsetWidth; // Maximum width based on container
+		this.img.width = Math.max(minWidth, Math.min(maxWidth, newWidth));
+
+		this.requestUpdate();
+	};
+
+	setCursor = (value) => {
+		[
+			document.body,
+			this.img,
+		].forEach((el) => {
+			el.style.cursor = value;   // eslint-disable-line no-param-reassign
+		});
+	};
 }
