@@ -81,6 +81,17 @@ export class Resize extends BaseModule {
 		// Reset cursor everywhere
 		this.setCursor('');
 
+		// Ensure minimum dimensions are respected after drag ends
+		const minWidth = 50;
+		const minHeight = 50;
+
+		if (this.img.width < minWidth) {
+			this.img.width = minWidth;
+		}
+		if (this.img.height < minHeight) {
+			this.img.height = minHeight;
+		}
+
 		// Stop listening for movement and mouseup
 		document.removeEventListener('touchmove', this.handleDrag);
 		document.removeEventListener('touchend', this.handleMouseup);
