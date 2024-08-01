@@ -107,10 +107,14 @@ export class Resize extends BaseModule {
 			newWidth = Math.round(this.preDragWidth + deltaX);
 		}
 
-		// Constrain newWidth to prevent the image from being too small or too large
-		const minWidth = 20; // Set a minimum width
+		const minWidth = 50; // Set a minimum width of 50px
 		const maxWidth = this.overlay.offsetWidth; // Maximum width based on container
 		this.img.width = Math.max(minWidth, Math.min(maxWidth, newWidth));
+
+		const minHeight = 50; // Set a minimum height of 50px
+		if (this.img.height) {
+			this.img.height = Math.max(minHeight, this.img.height);
+		}
 
 		this.requestUpdate();
 	};
