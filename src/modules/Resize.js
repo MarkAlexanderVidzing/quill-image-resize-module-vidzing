@@ -97,6 +97,10 @@ export class Resize extends BaseModule {
 		document.removeEventListener('touchend', this.handleMouseup);
 		document.removeEventListener('mousemove', this.handleDrag);
 		document.removeEventListener('mouseup', this.handleMouseup);
+
+		// Reposition the overlay and resize handles
+		this.positionBoxes();
+		this.repositionOverlay();
 	};
 
 	handleDrag = (evt) => {
@@ -122,12 +126,31 @@ export class Resize extends BaseModule {
 		const maxWidth = this.overlay.offsetWidth; // Maximum width based on container
 		this.img.width = Math.max(minWidth, Math.min(maxWidth, newWidth));
 
+		// Constrain height if necessary
+		const aspectRatio = this.img.naturalWidth / this.img.naturalHeight;
+		let newHeight = Math.round(newWidth / aspectRatio);
 		const minHeight = 50; // Set a minimum height of 50px
-		if (this.img.height) {
-			this.img.height = Math.max(minHeight, this.img.height);
-		}
+		this.img.height = Math.max(minHeight, newHeight);
 
 		this.requestUpdate();
+	};
+
+	repositionOverlay = () => {
+		if (!this.overlay || !this.img) {
+			return;
+		}
+
+		// position the overlay over the image
+		const parent = this.quill.root.parentNode;
+		const imgRect = this.img.getBoundingClientRect();
+		const containerRect = parent.getBoundingClientRect();
+
+		Object.assign(this.overlay.style, {
+			left: `${imgRect.left - containerRect.left - 1 + parent.scrollLeft}px`,
+			top: `${imgRect.top - containerRect.top + parent.scrollTop}px`,
+			width: `${imgRect.width}px`,
+			height: `${imgRect.height}px`,
+		});
 	};
 
 	setCursor = (value) => {
